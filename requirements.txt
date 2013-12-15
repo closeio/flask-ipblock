@@ -1,0 +1,2 @@
+-e git+ssh://git@github.com/elasticsales/mongoengine.git#egg=mongoengine-dev
+netaddr

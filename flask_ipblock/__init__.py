@@ -7,5 +7,9 @@ class IPBlock(object):
 
     def block_before(self):
         ips = request.headers.getlist("X-Forwarded-For")
-        if ips and IPNetwork.matches_ip(ips[0].split(',', 1)[0]):
-            return '', 200
+        if ips:
+            ip = ips[0].strip()
+            if ip[-1] == ',':
+                ip = ip[:-1]
+            if IPNetwork.matches_ip(ip.rsplit(',', 1)[-1].strip()):
+                return '', 200

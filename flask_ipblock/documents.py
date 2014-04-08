@@ -33,5 +33,5 @@ class IPNetwork(Document):
     @classmethod
     def matches_ip(cls, ip_str):
         ip = int(netaddr.IPAddress(ip_str))
-        return (cls.objects.filter(start__lte=ip, stop__gte=ip, whitelist=False).count() > 0)
+        return (cls.objects.filter(start__lte=ip, stop__gte=ip, whitelist=False).count() > 0) \
                 and not (cls.objects.filter(start__lte=ip, stop__gte=ip, whitelist=True).count() > 0)

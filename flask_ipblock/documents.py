@@ -11,7 +11,7 @@ class IPNetwork(Document):
     whitelist = BooleanField(default=False)
 
     meta = {
-        'indexes': [('start', 'stop')]
+        'indexes': [('start', 'stop', 'whitelist')]
     }
 
     @classmethod

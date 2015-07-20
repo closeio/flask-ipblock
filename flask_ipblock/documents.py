@@ -32,6 +32,14 @@ class IPNetwork(Document):
 
     @classmethod
     def matches_ip(cls, ip_str):
+        """
+        Return True if provided IP exists in the blacklist and doesn't exist
+        in the whitelist. Otherwise, return False.
+        """
         ip = int(netaddr.IPAddress(ip_str))
-        return (cls.objects.filter(start__lte=ip, stop__gte=ip, whitelist=False).count() > 0) \
-                and not (cls.objects.filter(start__lte=ip, stop__gte=ip, whitelist=True).count() > 0)
+        ip_range_query = {
+            'start__lte': ip,
+            'stop__gte': ip
+        }
+        return cls.objects.filter(whitelist=False, **ip_range_query).only('id').first() \
+                and not cls.objects.filter(whitelist=True, **ip_range_query).only('id').first()

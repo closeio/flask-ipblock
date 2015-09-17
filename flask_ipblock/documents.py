@@ -37,6 +37,9 @@ class IPNetwork(Document):
         in the whitelist. Otherwise, return False.
         """
         ip = int(netaddr.IPAddress(ip_str))
+        if ip > 4294967295: # ignore IPv6 addresses for now (4294967295 is 0xffffffff, aka the biggest 32-bit number)
+            return False
+
         ip_range_query = {
             'start__lte': ip,
             'stop__gte': ip

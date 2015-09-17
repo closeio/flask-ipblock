@@ -38,6 +38,10 @@ class IPBlockTestCase(unittest.TestCase):
             else:
                 self.assertTrue(match)
 
+    def test_ipv6(self):
+        """Make sure an IPv6 address is ignored gracefully for now."""
+        self.assertFalse(IPNetwork.matches_ip('2604:a880:800:10::ff:1'))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -44,5 +44,7 @@ class IPNetwork(Document):
             'start__lte': ip,
             'stop__gte': ip
         }
-        return cls.objects.filter(whitelist=False, **ip_range_query).only('id').first() \
-                and not cls.objects.filter(whitelist=True, **ip_range_query).only('id').first()
+
+        # return True if any docs match the IP and none of them represent a whitelist
+        objs = cls.objects.filter(**ip_range_query).only('whitelist')
+        return bool(objs) and not any(obj.whitelist for obj in objs)

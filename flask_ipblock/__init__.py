@@ -24,4 +24,4 @@ class IPBlock(object):
         if ip[-1] == ',':
             ip = ip[:-1]
         if IPNetwork.matches_ip(ip.rsplit(',', 1)[-1].strip()):
-            return '', 200
+            return 'IP Blocked', 200

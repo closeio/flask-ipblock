@@ -31,20 +31,27 @@ class IPNetwork(Document):
         return "%s: %s - %s" % (self.label, str(netaddr.IPAddress(self.start)), str(netaddr.IPAddress(self.stop)))
 
     @classmethod
-    def matches_ip(cls, ip_str):
+    def qs_for_ip(cls, ip_str):
         """
-        Return True if provided IP exists in the blacklist and doesn't exist
-        in the whitelist. Otherwise, return False.
+        Returns a queryset with matching IPNetwork objects for the given IP.
         """
         ip = int(netaddr.IPAddress(ip_str))
         if ip > 4294967295: # ignore IPv6 addresses for now (4294967295 is 0xffffffff, aka the biggest 32-bit number)
-            return False
+            return cls.objects.none()
 
         ip_range_query = {
             'start__lte': ip,
             'stop__gte': ip
         }
 
+        return cls.objects.filter(**ip_range_query)
+
+    @classmethod
+    def matches_ip(cls, ip_str):
+        """
+        Return True if provided IP exists in the blacklist and doesn't exist
+        in the whitelist. Otherwise, return False.
+        """
+        objs = cls.qs_for_ip(ip_str).only('whitelist')
         # return True if any docs match the IP and none of them represent a whitelist
-        objs = cls.objects.filter(**ip_range_query).only('whitelist')
         return bool(objs) and not any(obj.whitelist for obj in objs)

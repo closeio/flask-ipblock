@@ -1,9 +1,11 @@
 import netaddr
-from mongoengine import *
+from mongoengine import Document, StringField, IntField, BooleanField
+
 
 class IPNetwork(Document):
     """
-    Represents an IP (v4 or v6) network as 2 integers, the starting address and the stopping address, inclusive.
+    Represents an IP (v4 or v6) network as 2 integers, the starting address
+    and the stopping address, inclusive.
     """
     label = StringField(required=False)
     start = IntField(required=True)
@@ -24,11 +26,15 @@ class IPNetwork(Document):
         network = netaddr.IPNetwork(cidr)
         start = network.first
         stop = start + network.size - 1
-        obj = cls.objects.create(label=label, start=start, stop=stop, whitelist=whitelist)
+        obj = cls.objects.create(label=label, start=start, stop=stop,
+                                 whitelist=whitelist)
         return obj
 
     def __unicode__(self):
-        return "%s: %s - %s" % (self.label, str(netaddr.IPAddress(self.start)), str(netaddr.IPAddress(self.stop)))
+        return "%s: %s - %s" % (
+            self.label,
+            str(netaddr.IPAddress(self.start)),
+            str(netaddr.IPAddress(self.stop)))
 
     @classmethod
     def qs_for_ip(cls, ip_str):
@@ -36,7 +42,10 @@ class IPNetwork(Document):
         Returns a queryset with matching IPNetwork objects for the given IP.
         """
         ip = int(netaddr.IPAddress(ip_str))
-        if ip > 4294967295: # ignore IPv6 addresses for now (4294967295 is 0xffffffff, aka the biggest 32-bit number)
+
+        # ignore IPv6 addresses for now (4294967295 is 0xffffffff, aka the
+        # biggest 32-bit number)
+        if ip > 4294967295:
             return cls.objects.none()
 
         ip_range_query = {
@@ -53,5 +62,7 @@ class IPNetwork(Document):
         in the whitelist. Otherwise, return False.
         """
         objs = cls.qs_for_ip(ip_str).only('whitelist')
-        # return True if any docs match the IP and none of them represent a whitelist
+
+        # Return True if any docs match the IP and none of them represent
+        # a whitelist
         return bool(objs) and not any(obj.whitelist for obj in objs)

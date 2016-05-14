@@ -6,6 +6,7 @@ from mongoengine.connection import connect
 
 connect('testdb')
 
+
 class IPBlockTestCase(unittest.TestCase):
 
     def setUp(self):

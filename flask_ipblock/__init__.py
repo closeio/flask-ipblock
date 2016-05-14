@@ -1,6 +1,7 @@
 from flask import request, url_for
 from flask.ext.ipblock.documents import IPNetwork
 
+
 class IPBlock(object):
     def __init__(self, app):
         app.before_request(self.block_before)

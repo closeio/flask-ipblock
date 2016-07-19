@@ -3,7 +3,14 @@ from flask.ext.ipblock.documents import IPNetwork
 
 
 class IPBlock(object):
-    def __init__(self, app):
+    def __init__(self, app, read_preference=None):
+        """
+        Initialize IPBlock and set up a before_request handler in the app.
+
+        You can override the default MongoDB read preference via the optional
+        read_preference kwargs.
+        """
+        self.read_preference = read_preference
         app.before_request(self.block_before)
 
     def block_before(self):
@@ -24,5 +31,7 @@ class IPBlock(object):
         ip = ips[0].strip()
         if ip[-1] == ',':
             ip = ip[:-1]
-        if IPNetwork.matches_ip(ip.rsplit(',', 1)[-1].strip()):
+        ip = ip.rsplit(',', 1)[-1].strip()
+
+        if IPNetwork.matches_ip(ip, read_preference=self.read_preference):
             return 'IP Blocked', 200

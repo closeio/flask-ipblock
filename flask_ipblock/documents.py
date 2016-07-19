@@ -1,6 +1,5 @@
 import netaddr
 from mongoengine import Document, StringField, IntField, BooleanField
-from pymongo.read_preferences import ReadPreference
 
 
 class IPNetwork(Document):
@@ -57,14 +56,14 @@ class IPNetwork(Document):
         return cls.objects.filter(**ip_range_query)
 
     @classmethod
-    def matches_ip(cls, ip_str, use_secondary=False):
+    def matches_ip(cls, ip_str, read_preference=None):
         """
         Return True if provided IP exists in the blacklist and doesn't exist
         in the whitelist. Otherwise, return False.
         """
         qs = cls.qs_for_ip(ip_str).only('whitelist')
-        if use_secondary:
-            qs = qs.read_preference(ReadPreference.SECONDARY_PREFERRED)
+        if read_preference:
+            qs = qs.read_preference(read_preference)
 
         # Return True if any docs match the IP and none of them represent
         # a whitelist

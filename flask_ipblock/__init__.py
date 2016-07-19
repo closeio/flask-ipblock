@@ -3,7 +3,14 @@ from flask.ext.ipblock.documents import IPNetwork
 
 
 class IPBlock(object):
-    def __init__(self, app):
+    def __init__(self, app, use_secondary=False):
+        """
+        Initialize IPBlock and set up a before_request handler in the app.
+
+        If use_secondary is True, MongoDB query in IPNetwork.matches_ip will
+        use a secondaryPreferred option.
+        """
+        self.use_secondary = use_secondary
         app.before_request(self.block_before)
 
     def block_before(self):
@@ -24,5 +31,7 @@ class IPBlock(object):
         ip = ips[0].strip()
         if ip[-1] == ',':
             ip = ip[:-1]
-        if IPNetwork.matches_ip(ip.rsplit(',', 1)[-1].strip()):
+        ip = ip.rsplit(',', 1)[-1].strip()
+
+        if IPNetwork.matches_ip(ip, use_secondary=self.use_secondary):
             return 'IP Blocked', 200

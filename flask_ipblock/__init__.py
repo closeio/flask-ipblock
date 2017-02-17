@@ -15,15 +15,18 @@ class IPBlock(object):
 
         You can limit the impact of the IP checks on your MongoDB by
         maintaining a local in-memory LRU cache. To do so, specify its
-        size via cache_size and the TTL (in seconds) via cache_ttl.
+        cache_size (i.e. max number of IP addresses it can store) and
+        cache_ttl (i.e. how many seconds each result should be cached
+        for).
         """
         self.read_preference = read_preference
 
-        self.cache = None
         if cache_size and cache_ttl:
             # inline import because cachetools dependency is optional.
             from cachetools import TTLCache
             self.cache = TTLCache(cache_size, cache_ttl)
+        else:
+            self.cache = None
 
         app.before_request(self.block_before)
 
@@ -65,10 +68,7 @@ class IPBlock(object):
         if self.cache is not None:
             matches_ip = self.cache.get(ip)
             if matches_ip is not None:
-                if matches_ip:
-                    return 'IP Blocked', 200
-                else:
-                    return
+                return matches_ip
 
         # Query MongoDB to see if the IP is blacklisted
         matches_ip = IPNetwork.matches_ip(

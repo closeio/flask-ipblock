@@ -1,8 +1,9 @@
 Flask-IPBlock [![Build Status](https://circleci.com/gh/closeio/flask-ipblock.png?branch=master&style=shield)](https://circleci.com/gh/closeio/flask-ipblock)
 =============
 
-Block certain IP networks from accessing your Flask application.
+Block certain IP addresses from accessing your Flask application.
 
+Flask-IPBlock is backed by MongoDB and supports application-level caching to boost performance.
 
 Setup
 =====

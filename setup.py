@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='flask-ipblock',
-    version='0.1',
+    version='0.2',
     url='http://github.com/closeio/flask-ipblock',
     license='MIT',
-    description='Block certain IP networks from accessing your Flask app',
+    description='Block certain IP addresses from accessing your Flask app',
     platforms='any',
     classifiers=[
         'Intended Audience :: Developers',
@@ -17,4 +17,8 @@ setup(
     packages=[
         'flask_ipblock',
     ],
+    install_requires=[
+        'Flask',
+        'mongoengine'
+    ]
 )

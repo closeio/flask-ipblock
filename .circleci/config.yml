@@ -1,0 +1,19 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+    - image: circleci/python:2.7
+    - image: mongo:3.0.7
+    working_directory: ~/code
+    steps:
+    - checkout
+    - run:
+        name: Install dependencies
+        command: pipenv install flake8 nose
+    - run:
+        name: Lint
+        command: pipenv run flake8
+    - run:
+        name: Test
+        command: pipenv run nosetests
